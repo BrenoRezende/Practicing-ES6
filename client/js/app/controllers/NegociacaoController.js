@@ -16,7 +16,7 @@ class NegociacaoController {
                 }
 
                 return Reflect.get(target, prop, receiver);
-            } 
+            }
         });
 
         this._mensagemView = new MensagemView($('#mensagemView'));
