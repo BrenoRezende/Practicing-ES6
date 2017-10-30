@@ -17,5 +17,6 @@ class NegociacaoService {
         };
 
         xhr.send();
+
     }
 }
