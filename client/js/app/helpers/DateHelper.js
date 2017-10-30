@@ -1,7 +1,7 @@
 class DateHelper {
 
     constructor() {
-        throw new Error('This class cannot be instantiated');
+        throw new Error('This class cannot be instantiated.');
     }
 
     static textToDate(dateText) {
