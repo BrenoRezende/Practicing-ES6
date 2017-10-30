@@ -22,7 +22,7 @@ class NegociacaoView extends View {
                     `).join('')}
                 </tbody>
                 <tfoot>
-                    <td colspan="3"></td>
+                    <td colspan="3">Total</td>
                     <td>${model.negociacoes.reduce((total, n) => total + n.volume, 0.0)}</td>
                 </tfoot>
             </table>
