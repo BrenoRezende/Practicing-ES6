@@ -15,8 +15,6 @@ class NegociacaoController {
             new Mensagem(),
             new MensagemView($('#mensagemView')),
             'texto');
-
-        this._negociacaoService = new NegociacaoService();
     }
 
     adiciona(event) {
@@ -33,26 +31,17 @@ class NegociacaoController {
     }
 
     importaNegociacoes() {
-        this._negociacaoService.obterNegociacoesSemana()
-            .then(negociacoes => {
-                negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
-                this._mensagem.texto = 'Negociações da semana importadas com sucesso';
-            })
-            .catch(erro => this._mensagem.texto = erro);
 
-        this._negociacaoService.obterNegociacoesSemanaAnterior()
-            .then(negociacoes => {
-                negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
-                this._mensagem.texto = 'Negociações da semana anterior importadas com sucesso';
-            })
-            .catch(erro => this._mensagem.texto = erro);
-
-        this._negociacaoService.obterNegociacoesSemanaRetrasada()
-            .then(negociacoes => {
-                negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
-                this._mensagem.texto = 'Negociações da semana retrasada importadas com sucesso';
-            })
-            .catch(erro => this._mensagem.texto = erro);
+        let negociacaoService = new NegociacaoService();
+        Promise.all([
+            negociacaoService.obterNegociacoesSemana(), 
+            negociacaoService.obterNegociacoesSemanaAnterior(), 
+            negociacaoService.obterNegociacoesSemanaRetrasada()
+        ]).then(negociacoes => {
+            negociacoes.reduce((arrayConcatenado, array) => arrayConcatenado.concat(array), [])
+            .forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
+            this._mensagem.texto = 'Negociações adicionadas com sucesso!';
+        }).catch(error => this._mensagem.texto = error);
     }
 
     _criaNegociacao() {
