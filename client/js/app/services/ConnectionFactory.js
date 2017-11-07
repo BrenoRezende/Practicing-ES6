@@ -1,9 +1,10 @@
 var ConnectionFactory = (function() {
     
-    var dbName = 'negotiationDB';
-    var version = 1;
-    var stores = ['negociacoes'];
+    const dbName = 'negotiationDB';
+    const version = 1;
+    const stores = ['negociacoes'];
     var connection = null;
+    var close = null;
     
     return class ConnectionFactory {
     
@@ -23,8 +24,13 @@ var ConnectionFactory = (function() {
     
                 openDBRequest.onsuccess = e => {
     
-                    if(!connection)
+                    if(!connection) {
                         connection = e.target.result;
+                        close = connection.close.bind(connection); 
+                        connection.close = () => {
+                            throw new Error('Você não pode fechar diretamente a conexão.');
+                        };
+                    }
     
                     resolve(connection);
                 };
@@ -48,6 +54,13 @@ var ConnectionFactory = (function() {
             });
             
         } 
+
+        static closeConnection() {
+            if(connection) {
+                close();
+                connection = null;
+            }
+        }
     }
 
 })();
