@@ -17,23 +17,37 @@ class NegociacaoController {
             'texto');
 
         this._ordemAtual = '';
+
+        ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection).listaTodos())
+            .then(negociacoes => negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao)))
+            .catch(error => this._mensagem.texto = error);
     }
 
     adiciona(event) {
         event.preventDefault();
-        
-        try {
-            this._listaNegociacoes.adiciona(this._criaNegociacao());
-            this._limpaFormulario();
-            this._mensagem.texto = 'Negociação adicionada com sucesso!';
-        } catch (error) {
-            this._mensagem.texto = error;
-        }
+
+        ConnectionFactory.getConnection()
+            .then(connection => {
+                let negociacao = this._criaNegociacao();
+                new NegociacaoDao(connection).adiciona(negociacao)
+                    .then(() => {
+                        this._listaNegociacoes.adiciona(negociacao);
+                        this._limpaFormulario();
+                        this._mensagem.texto = 'Negociação adicionada com sucesso!';
+                    });
+            })
+            .catch(error => this._mensagem.texto = error);
     }
 
     apaga() {
-        this._listaNegociacoes.esvazia();
-        this._mensagem.texto = 'Negociações removidas com sucesso!';
+        ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection).apagaTodos())
+            .then(() => {
+                this._listaNegociacoes.esvazia();
+                this._mensagem.texto = 'Negociações removidas com sucesso!';
+            })
+            .catch(error => this._mensagem.texto = error);
     }
 
     importaNegociacoes() {
@@ -58,8 +72,8 @@ class NegociacaoController {
     _criaNegociacao() {
         return new Negociacao(
             DateHelper.textToDate(this._inputData.value),
-            this._inputQuantidade.value,
-            this._inputValor.value
+            parseInt(this._inputQuantidade.value),
+            parseFloat(this._inputValor.value)
         );
     }
 
