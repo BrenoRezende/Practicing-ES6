@@ -50,4 +50,43 @@ class NegociacaoService {
             });
     }
 
+    cadastra(negociacao) {
+        return ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.adiciona(negociacao))
+            .then(() => 'Negociação adicionada com sucesso!')            
+            .catch(error => {
+                throw new Error(error);
+            });
+    }
+
+    lista() {
+        return ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.listaTodos())
+            .then(negociacoes => negociacoes)
+            .catch(error => {
+                throw new Error(error);
+            })
+    }
+
+    apaga() {
+        return ConnectionFactory.getConnection()
+            .then(connection => new NegociacaoDao(connection).apagaTodos())
+            .then(() => 'Negociações removidas com sucesso!')
+            .catch(error => {
+                throw new Error(error);
+            });
+    }
+
+    importa(listaAtual) {
+        return this.obterTodasNegociacoes()
+            .then(negociacoes => negociacoes.filter(negociacao =>
+                !listaAtual.negociacoes.some(negociacaoExistente =>
+                    JSON.stringify(negociacao) == JSON.stringify(negociacaoExistente))))
+            .catch(error => {
+                throw new Error(error);
+            });
+    }
+
 }

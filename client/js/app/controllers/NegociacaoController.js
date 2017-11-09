@@ -18,41 +18,46 @@ class NegociacaoController {
 
         this._ordemAtual = '';
 
-        ConnectionFactory.getConnection()
-            .then(connection => new NegociacaoDao(connection).listaTodos())
+        this._negociacaoService = new NegociacaoService();
+
+        this._init();
+    }
+
+    _init() {
+        this._negociacaoService.lista()
             .then(negociacoes => negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao)))
             .catch(error => this._mensagem.texto = error);
+
+        setInterval(() => {
+            this.importaNegociacoes();
+        }, 3000);
     }
 
     adiciona(event) {
         event.preventDefault();
 
-        ConnectionFactory.getConnection()
-            .then(connection => {
-                let negociacao = this._criaNegociacao();
-                new NegociacaoDao(connection).adiciona(negociacao)
-                    .then(() => {
-                        this._listaNegociacoes.adiciona(negociacao);
-                        this._limpaFormulario();
-                        this._mensagem.texto = 'Negociação adicionada com sucesso!';
-                    });
+        let negociacao = this._criaNegociacao();
+        this._negociacaoService.cadastra(negociacao)
+            .then(msg => {
+                this._listaNegociacoes.adiciona(negociacao);
+                this._limpaFormulario();
+                this._mensagem.texto = msg;
             })
             .catch(error => this._mensagem.texto = error);
     }
 
     apaga() {
-        ConnectionFactory.getConnection()
-            .then(connection => new NegociacaoDao(connection).apagaTodos())
-            .then(() => {
+        this._negociacaoService.apaga()
+            .then(msg => {
                 this._listaNegociacoes.esvazia();
-                this._mensagem.texto = 'Negociações removidas com sucesso!';
+                this._mensagem.texto = msg;
             })
             .catch(error => this._mensagem.texto = error);
     }
 
     importaNegociacoes() {
 
-        new NegociacaoService().obterTodasNegociacoes()
+        this._negociacaoService.importa(this._listaNegociacoes)
         .then(negociacoes => {
             negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
             this._mensagem.texto = 'Negociações do período importadas com sucesso';
