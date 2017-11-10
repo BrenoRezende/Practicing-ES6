@@ -12,7 +12,7 @@
 
     <div id="mensagemView"></div>
 
-    <form class="form" onsubmit="negociacaoController.adiciona(event)">
+    <form class="form">
         <div class="form-group">
             <label for="data">Data</label>
             <input type="date" id="data" class="form-control" required autofocus/>
@@ -32,7 +32,7 @@
     </form>
 
     <div class="text-center">
-        <button class="btn btn-primary text-center" onclick="negociacaoController.apaga()" type="button">
+        <button class="btn btn-primary text-center" type="button">
             Apagar
         </button>
     </div>
@@ -41,23 +41,12 @@
 
     <div id="negociacaoView"></div>
 
-    <script src="./js/build/views/View.js"></script>
-    <script src="./js/build/models/Negociacao.js" charset="utf-8"></script>
-    <script src="./js/build/controllers/NegociacaoController.js" charset="utf-8"></script>
-    <script src="./js/build/helpers/DateHelper.js" charset="utf-8"></script>
-    <script src="./js/build/models/ListaNegociacoes.js" charset="utf-8"></script>
-    <script src="./js/build/views/NegociacaoView.js"></script>
-    <script src="./js/build/models/Mensagem.js"></script>
-    <script src="./js/build/views/MensagemView.js"></script>
-    <script src="./js/build/services/ProxyFactory.js"></script>
-    <script src="./js/build/helpers/Bind.js"></script>
-    <script src="./js/build/services/NegociacaoService.js"></script>
-    <script src="./js/build/services/HttpService.js"></script>
-    <script src="./js/build/services/ConnectionFactory.js"></script>
-    <script src="./js/build/dao/NegociacaoDao.js"></script>
-
+    <script src="./node_modules/systemjs/dist/system.js"></script>
     <script>
-        let negociacaoController = new NegociacaoController();
+        System.defaultJSExtensions = true;
+        System.import('./js/build/boot').catch(function(err){
+            console.error(err);
+        });
     </script>
 </body>
 </html>
